@@ -41,6 +41,16 @@ impl SamplerObject {
             ctxt.gl.SamplerParameteri(sampler, gl::TEXTURE_MAG_FILTER,
                                       behavior.magnify_filter.to_glenum() as gl::types::GLint);
 
+            if behavior.border_color != (0, 0, 0, 0) {
+                let (r, g, b, a) = behavior.border_color;
+
+                let color = [(r as f32 / 255f32) as gl::types::GLclampf,
+                             (g as f32 / 255f32) as gl::types::GLclampf,
+                             (b as f32 / 255f32) as gl::types::GLclampf,
+                             (a as f32 / 255f32) as gl::types::GLclampf];
+                ctxt.gl.SamplerParameterfv(sampler, gl::TEXTURE_BORDER_COLOR, &color[0]);
+            }
+
             if let Some(max_value) = ctxt.capabilities.max_texture_max_anisotropy {
                 let value = if behavior.max_anisotropy as f32 > max_value {
                     max_value

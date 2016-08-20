@@ -16,7 +16,10 @@ pub enum SamplerWrapFunction {
     Clamp,
 
     /// Same as Mirror, but only for one repetition,
-    MirrorClamp
+    MirrorClamp,
+
+    /// Samples at coord `x + 1` map to the border color of the sampler.
+    BorderClamp,
 }
 
 impl ToGlEnum for SamplerWrapFunction {
@@ -27,6 +30,7 @@ impl ToGlEnum for SamplerWrapFunction {
             SamplerWrapFunction::Mirror => gl::MIRRORED_REPEAT,
             SamplerWrapFunction::Clamp => gl::CLAMP_TO_EDGE,
             SamplerWrapFunction::MirrorClamp => gl::MIRROR_CLAMP_TO_EDGE,
+            SamplerWrapFunction::BorderClamp => gl::CLAMP_TO_BORDER,
         }
     }
 }
@@ -101,6 +105,12 @@ impl<'t, T: 't> Sampler<'t, T> {
         Sampler(texture, Default::default())
     }
 
+    /// Changes the border color of the sampler.
+    pub fn border_color(mut self, color: (u8, u8, u8, u8)) -> Sampler<'t, T> {
+        self.1.border_color = color;
+        self
+    }
+
     /// Changes the wrap functions of all three coordinates.
     pub fn wrap_function(mut self, function: SamplerWrapFunction) -> Sampler<'t, T> {
         self.1.wrap_function = (function, function, function);
@@ -135,12 +145,18 @@ impl<'t, T: 't> Clone for Sampler<'t, T> {
 }
 
 /// Behavior of a sampler.
-// TODO: GL_TEXTURE_BORDER_COLOR, GL_TEXTURE_MIN_LOD, GL_TEXTURE_MAX_LOD, GL_TEXTURE_LOD_BIAS,
+// TODO: GL_TEXTURE_MIN_LOD, GL_TEXTURE_MAX_LOD, GL_TEXTURE_LOD_BIAS,
 //       GL_TEXTURE_COMPARE_MODE, GL_TEXTURE_COMPARE_FUNC
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct SamplerBehavior {
     /// Functions to use for the X, Y, and Z coordinates.
     pub wrap_function: (SamplerWrapFunction, SamplerWrapFunction, SamplerWrapFunction),
+
+    /// The border color to use when one of the `wrap_function`'s is `BorderClamp`.
+    // FIXME: These should probably be `f32`'s in line with other functions taking
+    // colors as arguments, however float's are very impractical to use together with
+    // `Hash` and `Eq`.
+    pub border_color: (u8, u8, u8, u8),
 
     /// Filter to use when minifying the texture.
     pub minify_filter: MinifySamplerFilter,
@@ -169,6 +185,7 @@ impl Default for SamplerBehavior {
                 SamplerWrapFunction::Mirror,
                 SamplerWrapFunction::Mirror
             ),
+            border_color: (0, 0, 0, 0),
             minify_filter: MinifySamplerFilter::LinearMipmapLinear,
             magnify_filter: MagnifySamplerFilter::Linear,
             max_anisotropy: 1,
