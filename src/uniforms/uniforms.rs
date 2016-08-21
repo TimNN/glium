@@ -32,6 +32,17 @@ impl<'n, T> UniformsStorage<'n, T, EmptyUniforms> where T: AsUniformValue {
 }
 
 impl<'n, T, R> UniformsStorage<'n, T, R> where T: AsUniformValue, R: Uniforms {
+    #[inline]
+    pub fn new_with_rest<U>(name: &'n str, value: T, rest: R)
+                            -> UniformsStorage<'n, T, R>
+    {
+        UniformsStorage {
+            name: name,
+            value: value,
+            rest: rest,
+        }
+    }
+
     /// Adds a value to the storage.
     #[inline]
     pub fn add<U>(self, name: &'n str, value: U)
