@@ -84,11 +84,13 @@ result to the user.
  - **Vertex array objects**: VAOs are automatically managed by glium if the backend supports them.
 
 */
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 
 // TODO: remove these when everything is implemented
 #![allow(dead_code)]
 #![allow(unused_variables)]
+#![allow(unused_imports)]
+#![allow(unused_must_use)]
 
 #[macro_use]
 extern crate lazy_static;
