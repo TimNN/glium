@@ -219,9 +219,9 @@ impl Context {
         // making sure that an error wasn't triggered during initialization
         {
             let mut ctxt = context.make_current();
-            if ::get_gl_error(&mut ctxt).is_some() {
-                println!("glium has triggered an OpenGL error during initialization. Please report \
-                          this error: https://github.com/tomaka/glium/issues");
+            if let Some(err) = ::get_gl_error(&mut ctxt) {
+                println!("glium has triggered an OpenGL error ({:?}) during initialization. Please report \
+                          this error: https://github.com/tomaka/glium/issues", err);
             }
             /*assert!(::get_gl_error(&mut ctxt).is_none(),
                     "glium has triggered an OpenGL error during initialization. Please report \
