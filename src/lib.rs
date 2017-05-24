@@ -93,6 +93,7 @@ result to the user.
 #[macro_use]
 extern crate lazy_static;
 
+#[cfg(feature = "backtrace")]
 extern crate backtrace;
 extern crate smallvec;
 extern crate fnv;
