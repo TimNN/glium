@@ -234,7 +234,7 @@ impl MipmapsOption {
                 let max_dimension = cmp::max(width, cmp::max(height.unwrap_or(1),
                                              depth.unwrap_or(1))) as f32;
                 match max_dimension {
-                    0.0 => 1,
+                    a if a == 0.0 => 1,
                     a => 1 + a.log2() as u32,
                 }
             },
